@@ -41,6 +41,34 @@ namespace TrustGateSqLiteService.Migrations
                     b.ToTable("Admin", (string)null);
                 });
 
+            modelBuilder.Entity("TrustGateCore.Models.Authorization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ControllerName")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Generic")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ControllerAuthorization", (string)null);
+                });
+
             modelBuilder.Entity("TrustGateCore.Models.Company", b =>
                 {
                     b.Property<int>("Id")
@@ -70,35 +98,7 @@ namespace TrustGateSqLiteService.Migrations
                     b.ToTable("Company", (string)null);
                 });
 
-            modelBuilder.Entity("TrustGateCore.Models.ControllerAuthorization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ControllerName")
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("Generic")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ControllerAuthorization", (string)null);
-                });
-
-            modelBuilder.Entity("TrustGateCore.Models.ControllerUser", b =>
+            modelBuilder.Entity("TrustGateCore.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -123,7 +123,7 @@ namespace TrustGateSqLiteService.Migrations
                     b.ToTable("ControlerUser", (string)null);
                 });
 
-            modelBuilder.Entity("TrustGateCore.Models.ControllerAuthorization", b =>
+            modelBuilder.Entity("TrustGateCore.Models.Authorization", b =>
                 {
                     b.HasOne("TrustGateCore.Models.Company", "Company")
                         .WithMany("Authorizations")
@@ -131,7 +131,7 @@ namespace TrustGateSqLiteService.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TrustGateCore.Models.ControllerUser", "User")
+                    b.HasOne("TrustGateCore.Models.User", "User")
                         .WithMany("Authorizations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -147,7 +147,7 @@ namespace TrustGateSqLiteService.Migrations
                     b.Navigation("Authorizations");
                 });
 
-            modelBuilder.Entity("TrustGateCore.Models.ControllerUser", b =>
+            modelBuilder.Entity("TrustGateCore.Models.User", b =>
                 {
                     b.Navigation("Authorizations");
                 });

@@ -9,7 +9,7 @@ public class SqlDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite("Data Source= C:\\Users\\jmich\\OneDrive\\Pulpit\\trustgate.db");
+        options.UseSqlite("Data Source= C:\\Users\\jmich\\OneDrive\\Pulpit\\backup\\test\\trustgate.db");
     }
 
     public DbSet<User> ControlerUsers { get; set; }

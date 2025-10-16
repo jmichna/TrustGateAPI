@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.SqlServer.Server;
 using TrustGateAPI.Configurations;
 using TrustGateSqlLiteService.Db;
 
@@ -6,8 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 JsonManagerConfig.ConfigureJsonSettings(builder.Services, builder.Configuration);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<SqlDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite(connectionString)
+);
 
 builder.Services.AddControllers();
 
