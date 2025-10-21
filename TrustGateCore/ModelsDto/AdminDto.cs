@@ -9,6 +9,6 @@ namespace TrustGateCore.ModelsDto;
 public class AdminDto
 {
     public int Id { get; protected set; }
-    public string Login { get; protected set; } = string.Empty;
-    public string Email { get; protected set; } = string.Empty;
+    public string AdminLogin { get; protected set; } = string.Empty;
+    public string AdminEmail { get; protected set; } = string.Empty;
 }

@@ -10,10 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 JsonManagerConfig.ConfigureJsonSettings(builder.Services, builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<SqlDbContext>(options =>
-    options.UseSqlite(connectionString)
-);
+builder.Services.AddDbContext<SqlDbContext>(options => options.UseSqlite(connectionString));
 
 builder.Services.AddControllers();
 

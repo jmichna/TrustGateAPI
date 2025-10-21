@@ -3,11 +3,10 @@ using TrustGateAPI.Services.Interfaces;
 
 namespace TrustGateAPI.Controllers;
 
-public class AuthorizationController : BaseController
+[ApiController]
+[Route("api/[controller]")]
+public class AuthorizationController(IAuthorizationService authorizationService) : BaseController
 {
-    private readonly IAuthorizationService _authorizationService;
-
-    public AuthorizationController(IAuthorizationService authorizationService) => _authorizationService = authorizationService;
 
     [HttpPost("Get")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TokenResponse))]
@@ -16,7 +15,7 @@ public class AuthorizationController : BaseController
     {
         try
         {
-            var token = _authorizationService.GenerateToken(login, password);
+            var token = authorizationService.GenerateToken(login, password);
             return Ok(new TokenResponse { Token = token });
         }
         catch (UnauthorizedAccessException)
@@ -32,7 +31,7 @@ public class AuthorizationController : BaseController
     {
         try
         {
-            var newToken = _authorizationService.RefreshToken(token);
+            var newToken = authorizationService.RefreshToken(token);
             return Ok(new TokenResponse { Token = newToken });
         }
         catch (Exception)
