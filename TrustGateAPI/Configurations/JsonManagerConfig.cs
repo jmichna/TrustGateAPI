@@ -1,12 +1,11 @@
 ﻿using TrustGateAPI.Models.Settings;
 
-namespace TrustGateAPI.Configurations
+namespace TrustGateAPI.Configurations;
+
+public static class JsonManagerConfig
 {
-    public static class JsonManagerConfig
+    public static void ConfigureJsonSettings(IServiceCollection services, IConfiguration configuration)
     {
-        public static void ConfigureJsonSettings(IServiceCollection services, IConfiguration configuration)
-        {
-            services.Configure<JsonSetting>(configuration.GetSection("JsonSettings"));
-        }
+        services.Configure<JsonSetting>(configuration.GetSection("JsonSettings"));
     }
 }
