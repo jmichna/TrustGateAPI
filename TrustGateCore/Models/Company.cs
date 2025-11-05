@@ -15,5 +15,6 @@ public class Company
     public int ProjectId { get; set; }
 
     public ICollection<Authorization> Authorizations { get; set; } = new List<Authorization>();
+    public ICollection<ApiEndpoint> ApiEndpoints { get; set; } = new List<ApiEndpoint>();
 }
 

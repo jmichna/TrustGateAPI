@@ -9,6 +9,7 @@ public static class ServiceConfig
     {
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         services.AddScoped<ICsvReaderService, CsvReaderService>();
+        services.AddScoped<ICsvEndpointImportService, CsvEndpointImportService>();
 
         return services;
     }
