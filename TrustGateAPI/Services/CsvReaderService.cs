@@ -5,7 +5,7 @@ namespace TrustGateAPI.Services;
 
 public class CsvReaderService : ICsvReaderService
 {
-    public async Task<IReadOnlyList<CsvRowDto>> ReadAsync(Stream csvStream, CancellationToken ct = default)
+    public async Task<IReadOnlyList<CsvRowDto>> ReadAsync(Stream csvStream)
     {
         using var reader = new StreamReader(csvStream);
         var content = await reader.ReadToEndAsync();
