@@ -14,13 +14,15 @@ public class CsvController(ICsvReaderService csv, ICsvEndpointImportService impo
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Upload(IFormFile file)
     {
-        if (file is null || file.Length == 0) return BadRequest("Brak pliku.");
-        if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-            return BadRequest("Dozwolone tylko pliki .csv.");
-
-        await using var stream = file.OpenReadStream();
-        var rows = await csv.ReadAsync(stream);
-        return Ok(rows);
+        try
+        {
+            var rows = await csv.ReadAsync(file);
+            return Ok(rows);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     //// 2) Odczyt z istniejącej ścieżki na serwerze

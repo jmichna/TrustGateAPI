@@ -1,8 +1,8 @@
 ﻿using TrustGateCore.ModelsDto;
 
-namespace TrustGateAPI.Services.Interfaces;
+namespace TrustGateAPI.Repositories.Interfaces;
 
-public interface ICsvReaderService
+public interface ICsvReaderRepository
 {
     Task<IReadOnlyList<CsvRowDto>> ReadAsync(IFormFile file);
 }
