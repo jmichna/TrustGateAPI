@@ -16,11 +16,11 @@ JsonManagerConfig.ConfigureJsonSettings(builder.Services, builder.Configuration)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<SqlDbContext>(options => options.UseSqlite($"Data Source={connectionString}"));
 
-// 1) odczyt ustawieñ JWT
+// 1) read JWT settings
 var jwtSection = builder.Configuration.GetSection("JsonSettings");
 var key = Encoding.UTF8.GetBytes(jwtSection["JwtKey"]!);
 
-// 2) rejestracja AUTH + JWT
+// 2)  AUTH + JWT registration
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -55,11 +55,11 @@ builder.Services.AddSwaggerGen(
             Version = "v1"
         });
 
-        //definicja JWT w Swaggerze
+        //JWT definition in Swagger
         var securityScheme = new OpenApiSecurityScheme
         {
             Name = "Authorization",
-            Description = "Wpisz: Bearer {token}",
+            Description = "Insert: {token}",
             In = ParameterLocation.Header,
             Type = SecuritySchemeType.Http,
             Scheme = "bearer",
@@ -68,7 +68,6 @@ builder.Services.AddSwaggerGen(
 
         c.AddSecurityDefinition("Bearer", securityScheme);
 
-        //wymagaj JWT domyœlnie (dziêki temu przycisk Authorize dzia³a globalnie)
         var securityRequirement = new OpenApiSecurityRequirement
     {
         {

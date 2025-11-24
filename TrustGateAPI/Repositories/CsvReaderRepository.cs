@@ -7,62 +7,92 @@ public class CsvReaderRepository : ICsvReaderService
 {
     public async Task<IReadOnlyList<CsvRowDto>> ReadAsync(IFormFile file)
     {
-        if (file is null)
-            throw new ArgumentException("Plik jest wymagany.");
-
-        if (file.Length == 0)
-            throw new ArgumentException("Plik jest pusty.");
-
-        if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Dozwolone są tylko pliki .csv.");
+        ValidateFile(file);
 
         await using var stream = file.OpenReadStream();
-        return await ParseAsync(stream);
+        return await ParseCsv(stream);
     }
 
-    private async Task<IReadOnlyList<CsvRowDto>> ParseAsync(Stream csvStream)
+    private static void ValidateFile(IFormFile file)
     {
-        using var reader = new StreamReader(csvStream);
-        var content = await reader.ReadToEndAsync();
+        if (file is null)
+            throw new ArgumentException("No file found.");
 
-        var lines = content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-        if (lines.Length == 0)
+        if (file.Length == 0)
+            throw new ArgumentException("File is empty.");
+
+        if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Only .csv files are allowed");
+    }
+
+    private async Task<IReadOnlyList<CsvRowDto>> ParseCsv(Stream csvStream)
+    {
+        var content = await ReadContent(csvStream);
+        var lines = SplitLines(content);
+
+        if (lines.Count == 0)
             return Array.Empty<CsvRowDto>();
 
         var headers = SplitCsvLine(lines[0]);
+        return ParseRows(lines.Skip(1), headers);
+    }
+
+    private async Task<string> ReadContent(Stream stream)
+    {
+        using var reader = new StreamReader(stream);
+        return await reader.ReadToEndAsync();
+    }
+
+    private List<string> SplitLines(string content)
+    {
+        return content
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+            .ToList();
+    }
+
+    private IReadOnlyList<CsvRowDto> ParseRows(IEnumerable<string> lines, List<string> headers)
+    {
         var result = new List<CsvRowDto>();
 
-        for (int i = 1; i < lines.Length; i++)
+        foreach (var line in lines)
         {
-            var cells = SplitCsvLine(lines[i]);
-            var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            for (int c = 0; c < headers.Count; c++)
-                dict[headers[c]] = c < cells.Count ? cells[c] : string.Empty;
-
-            result.Add(new CsvRowDto(dict));
+            var rowDict = ParseRow(line, headers);
+            result.Add(new CsvRowDto(rowDict));
         }
 
         return result;
     }
 
+    private Dictionary<string, string> ParseRow(string line, List<string> headers)
+    {
+        var cells = SplitCsvLine(line);
+        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        for (int c = 0; c < headers.Count; c++)
+        {
+            dict[headers[c]] = c < cells.Count ? cells[c] : string.Empty;
+        }
+
+        return dict;
+    }
+
     private static List<string> SplitCsvLine(string line)
     {
-        var res = new List<string>();
+        var values = new List<string>();
         var sb = new System.Text.StringBuilder();
-        bool quote = false;
+        bool insideQuotes = false;
 
         foreach (var ch in line)
         {
             if (ch == '"')
             {
-                quote = !quote;
+                insideQuotes = !insideQuotes;
                 continue;
             }
 
-            if (ch == ',' && !quote)
+            if (ch == ',' && !insideQuotes)
             {
-                res.Add(sb.ToString());
+                values.Add(sb.ToString());
                 sb.Clear();
             }
             else
@@ -71,7 +101,7 @@ public class CsvReaderRepository : ICsvReaderService
             }
         }
 
-        res.Add(sb.ToString());
-        return res;
+        values.Add(sb.ToString());
+        return values;
     }
 }

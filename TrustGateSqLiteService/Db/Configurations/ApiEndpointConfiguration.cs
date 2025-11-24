@@ -29,7 +29,6 @@ public class ApiEndpointConfiguration : IEntityTypeConfiguration<ApiEndpoint>
               .IsRequired()
               .HasMaxLength(300);
 
-        // relacja: wiele endpointów -> jedna firma
         entity.HasOne(e => e.Company)
               .WithMany(c => c.ApiEndpoints)
               .HasForeignKey(e => e.CompanyId)
