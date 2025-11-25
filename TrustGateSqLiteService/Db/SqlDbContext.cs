@@ -18,6 +18,7 @@ public class SqlDbContext : DbContext
     public DbSet<Authorization> Authorizations => Set<Authorization>();
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<Admin> Admins => Set<Admin>();
+    public DbSet<ApiEndpoint> ApiEndpoints => Set<ApiEndpoint>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -19,5 +19,7 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
         entity.Property(e => e.CompanyInitials).IsRequired().HasMaxLength(20);
         entity.Property(e => e.ProjectName).IsRequired().HasMaxLength(200);
         entity.Property(e => e.ProjectId).IsRequired();
+
+        entity.HasIndex(e => e.ProjectName ).IsUnique();
     }
 }

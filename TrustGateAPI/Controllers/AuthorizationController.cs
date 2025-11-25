@@ -3,8 +3,6 @@ using TrustGateAPI.Services.Interfaces;
 
 namespace TrustGateAPI.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 public class AuthorizationController(IAuthorizationService authorizationService) : BaseController
 {
 
