@@ -1,31 +1,20 @@
-﻿using TrustGateAPI.Services.Interfaces;
+﻿using TrustGateAPI.Repositories.Interfaces;
+using TrustGateAPI.Validation;
 using TrustGateCore.ModelsDto;
 
 namespace TrustGateAPI.Repositories;
 
-public class CsvReaderRepository : ICsvReaderService
+public class CsvReaderRepository : ICsvReaderRepository
 {
     public async Task<IReadOnlyList<CsvRowDto>> ReadAsync(IFormFile file)
     {
-        ValidateFile(file);
+        CsvFileValidator.ValidateImportFile(file);
 
         await using var stream = file.OpenReadStream();
-        return await ParseCsv(stream);
+        return await ParseCsvContent(stream);
     }
 
-    private static void ValidateFile(IFormFile file)
-    {
-        if (file is null)
-            throw new ArgumentException("No file found.");
-
-        if (file.Length == 0)
-            throw new ArgumentException("File is empty.");
-
-        if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Only .csv files are allowed");
-    }
-
-    private async Task<IReadOnlyList<CsvRowDto>> ParseCsv(Stream csvStream)
+    private async Task<IReadOnlyList<CsvRowDto>> ParseCsvContent(Stream csvStream)
     {
         var content = await ReadContent(csvStream);
         var lines = SplitLines(content);
@@ -56,14 +45,14 @@ public class CsvReaderRepository : ICsvReaderService
 
         foreach (var line in lines)
         {
-            var rowDict = ParseRow(line, headers);
+            var rowDict = ParseCsvRow(line, headers);
             result.Add(new CsvRowDto(rowDict));
         }
 
         return result;
     }
 
-    private Dictionary<string, string> ParseRow(string line, List<string> headers)
+    private Dictionary<string, string> ParseCsvRow(string line, List<string> headers)
     {
         var cells = SplitCsvLine(line);
         var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

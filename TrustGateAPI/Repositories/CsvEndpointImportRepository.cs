@@ -1,25 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TrustGateAPI.Services.Interfaces;
 using TrustGateCore.Models;
 using TrustGateCore.ModelsDto;
+using TrustGateAPI.Validation;
+using TrustGateAPI.Repositories.Interfaces;
+using TrustGateAPI.Repositories;
 using TrustGateSqlLiteService.Db;
 
 namespace TrustGateAPI.Repositories;
 
-public class CsvEndpointRepository : ICsvEndpointImportService
+public class CsvEndpointImportRepository(SqlDbContext db, ICsvReaderRepository csvReader)
+    : ICsvEndpointImportRepository
 {
     private readonly SqlDbContext _db;
-    private readonly ICsvReaderService _csvReader;
-
-    public CsvEndpointRepository(SqlDbContext db, ICsvReaderService csvReader)
-    {
-        _db = db;
-        _csvReader = csvReader;
-    }
+    private readonly ICsvReaderRepository _csvReader;
 
     public async Task<int> ImportCompaniesWithEndpointsAsync(IFormFile file)
     {
-        ValidateFile(file);
+        CsvFileValidator.ValidateImportFile(file);
 
         var rows = await _csvReader.ReadAsync(file);
 
@@ -30,17 +27,6 @@ public class CsvEndpointRepository : ICsvEndpointImportService
             await _db.ApiEndpoints.AddRangeAsync(endpointsToAdd);
 
         return await _db.SaveChangesAsync();
-    }
-
-    #region helpers
-
-    private static void ValidateFile(IFormFile file)
-    {
-        if (file is null || file.Length == 0)
-            throw new ArgumentException("File is empty or was not attached.");
-
-        if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("Only CSV files are allowed.");
     }
 
     private List<ApiEndpoint> BuildEndpoints(
@@ -90,7 +76,6 @@ public class CsvEndpointRepository : ICsvEndpointImportService
         if (companyCache.TryGetValue(key, out var cachedCompany))
             return cachedCompany;
 
-        // if not in cashe – check in database
         var company = _db.Companies.FirstOrDefault(c =>
             c.CompanyName == nameNorm &&
             c.CompanyInitials == initialsNorm &&
@@ -133,6 +118,4 @@ public class CsvEndpointRepository : ICsvEndpointImportService
             Company = company
         };
     }
-
-    #endregion    
 }

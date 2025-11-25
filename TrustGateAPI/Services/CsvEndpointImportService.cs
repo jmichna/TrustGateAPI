@@ -4,7 +4,7 @@ using TrustGateAPI.Services.Interfaces;
 
 namespace TrustGateAPI.Services;
 
-public class CsvEndpointImportService(ICsvEndpointRepository repository)
+public class CsvEndpointImportService(ICsvEndpointImportRepository repository)
     : ICsvEndpointImportService
 {
     public Task<int> ImportCompaniesWithEndpointsAsync(IFormFile file)

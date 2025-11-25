@@ -1,6 +1,6 @@
 ﻿namespace TrustGateAPI.Repositories.Interfaces;
 
-public interface ICsvEndpointRepository
+public interface ICsvEndpointImportRepository
 {
     Task<int> ImportCompaniesWithEndpointsAsync(IFormFile file);
 }

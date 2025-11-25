@@ -1,4 +1,5 @@
 ﻿using TrustGateAPI.Repositories;
+using TrustGateAPI.Repositories.Interfaces;
 using TrustGateAPI.Services;
 using TrustGateAPI.Services.Interfaces;
 
@@ -9,8 +10,14 @@ public static class ServiceConfig
     public static IServiceCollection AddProjectService(IServiceCollection services)
     {
         services.AddScoped<IAuthorizationService, AuthorizationService>();
-        services.AddScoped<ICsvReaderService, CsvReaderRepository>();
-        services.AddScoped<ICsvEndpointImportService, CsvEndpointRepository>();
+        
+        // CSV parsing
+        services.AddScoped<ICsvReaderRepository, CsvReaderRepository>();
+        services.AddScoped<ICsvReaderService, CsvReaderService>();
+
+        // CSV import -> DB
+        services.AddScoped<ICsvEndpointImportRepository, CsvEndpointImportRepository>();
+        services.AddScoped<ICsvEndpointImportService, CsvEndpointImportService>();
 
         return services;
     }

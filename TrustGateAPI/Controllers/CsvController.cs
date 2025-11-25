@@ -10,8 +10,6 @@ public class CsvController(ICsvReaderService csv, ICsvEndpointImportService impo
 {
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<CsvRowDto>))]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Upload(IFormFile file)
     {
         try
@@ -43,7 +41,14 @@ public class CsvController(ICsvReaderService csv, ICsvEndpointImportService impo
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> ImportCompaniesWithEndpoints(IFormFile file)
     {
-        var count = await importService.ImportCompaniesWithEndpointsAsync(file);
-        return Ok(new { saved = count });
+        try
+        {
+            var count = await importService.ImportCompaniesWithEndpointsAsync(file);
+            return Ok(new { saved = count });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }
