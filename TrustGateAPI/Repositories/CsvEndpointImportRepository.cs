@@ -50,8 +50,8 @@ public class CsvEndpointImportRepository(SqlDbContext db, ICsvReaderRepository c
     }
 
     private Company? GetOrCreateCompany(
-        CsvRowDto row,
-        Dictionary<string, Company> companyCache)
+    CsvRowDto row,
+    Dictionary<string, Company> companyCache)
     {
         row.Columns.TryGetValue("NazwaFirmy", out var companyName);
         row.Columns.TryGetValue("InicjalyFirmy", out var companyInitials);
@@ -91,12 +91,12 @@ public class CsvEndpointImportRepository(SqlDbContext db, ICsvReaderRepository c
                 ProjectId = projectId
             };
 
-            _db.Companies.Add(company);
         }
 
         companyCache[key] = company;
         return company;
     }
+
 
     private ApiEndpoint? CreateEndpointIfValid(CsvRowDto row, Company company)
     {

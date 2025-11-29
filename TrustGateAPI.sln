@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrustGateSqLiteService", "T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrustGateCore", "TrustGateCore\TrustGateCore.csproj", "{8B4BCC6C-6ED7-4D65-8E73-E4515BAA960A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrustGateTests", "TrustGateTests\TrustGateTests.csproj", "{B054E9E2-EA87-48A0-A249-97BD16B51458}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{8B4BCC6C-6ED7-4D65-8E73-E4515BAA960A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B4BCC6C-6ED7-4D65-8E73-E4515BAA960A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B4BCC6C-6ED7-4D65-8E73-E4515BAA960A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B054E9E2-EA87-48A0-A249-97BD16B51458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B054E9E2-EA87-48A0-A249-97BD16B51458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B054E9E2-EA87-48A0-A249-97BD16B51458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B054E9E2-EA87-48A0-A249-97BD16B51458}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

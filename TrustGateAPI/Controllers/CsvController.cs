@@ -23,20 +23,6 @@ public class CsvController(ICsvReaderService csv, ICsvEndpointImportService impo
         }
     }
 
-    //// 2) Odczyt z istniejącej ścieżki na serwerze
-    //[HttpGet("read")]
-    //[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IReadOnlyList<CsvRowDto>))]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //public async Task<IActionResult> Read([FromQuery] string path, CancellationToken ct)
-    //{
-    //    if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
-    //        return BadRequest("Nieprawidłowa ścieżka.");
-
-    //    await using var fs = System.IO.File.OpenRead(path);
-    //    var rows = await csv.ReadAsync(fs, ct);
-    //    return Ok(rows);
-    //}
-
     [HttpPost("companies-with-endpoints")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> ImportCompaniesWithEndpoints(IFormFile file)
