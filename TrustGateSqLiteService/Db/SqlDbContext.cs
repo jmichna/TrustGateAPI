@@ -19,6 +19,7 @@ public class SqlDbContext : DbContext
     public DbSet<Company> Companies => Set<Company>();
     public DbSet<Admin> Admins => Set<Admin>();
     public DbSet<ApiEndpoint> ApiEndpoints => Set<ApiEndpoint>();
+    public DbSet<ApiToken> ApiTokens => Set<ApiToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -8,11 +8,10 @@ using TrustGateSqlLiteService.Db;
 
 namespace TrustGateAPI.Repositories;
 
-public class CsvEndpointImportRepository(SqlDbContext db, ICsvReaderRepository csvReader)
-    : ICsvEndpointImportRepository
+public class CsvEndpointImportRepository(SqlDbContext db, ICsvReaderRepository csvReader) : ICsvEndpointImportRepository
 {
-    private readonly SqlDbContext _db;
-    private readonly ICsvReaderRepository _csvReader;
+    private readonly SqlDbContext _db = db;
+    private readonly ICsvReaderRepository _csvReader = csvReader;
 
     public async Task<int> ImportCompaniesWithEndpointsAsync(IFormFile file)
     {
@@ -103,18 +102,26 @@ public class CsvEndpointImportRepository(SqlDbContext db, ICsvReaderRepository c
         row.Columns.TryGetValue("EndpointName", out var endpointName);
         row.Columns.TryGetValue("HttpMethod", out var httpMethod);
         row.Columns.TryGetValue("Route", out var route);
+        row.Columns.TryGetValue("ApiTokenId", out var apiTokenIdString);
 
-        if (string.IsNullOrWhiteSpace(endpointName) ||
-            string.IsNullOrWhiteSpace(route))
+        if (string.IsNullOrWhiteSpace(endpointName) || string.IsNullOrWhiteSpace(route))
             return null;
+
+        int? apiTokenId = null;
+        if (!string.IsNullOrWhiteSpace(apiTokenIdString))
+        {
+            if (int.TryParse(apiTokenIdString, out var tokenId))
+            {
+                apiTokenId = tokenId;
+            }
+        }
 
         return new ApiEndpoint
         {
             Name = endpointName.Trim(),
-            HttpMethod = string.IsNullOrWhiteSpace(httpMethod)
-                ? "GET"
-                : httpMethod.Trim().ToUpperInvariant(),
+            HttpMethod = string.IsNullOrWhiteSpace(httpMethod) ? "GET" : httpMethod.Trim().ToUpperInvariant(),
             Route = route.Trim(),
+            ApiTokenId = apiTokenId,
             Company = company
         };
     }

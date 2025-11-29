@@ -33,5 +33,10 @@ public class ApiEndpointConfiguration : IEntityTypeConfiguration<ApiEndpoint>
               .WithMany(c => c.ApiEndpoints)
               .HasForeignKey(e => e.CompanyId)
               .OnDelete(DeleteBehavior.Cascade);
+
+        entity.HasOne(e => e.ApiToken)
+              .WithMany(t => t.ApiEndpoints)
+              .HasForeignKey(e => e.ApiTokenId)
+              .OnDelete(DeleteBehavior.SetNull);
     }
 }

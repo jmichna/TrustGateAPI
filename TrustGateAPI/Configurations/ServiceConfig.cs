@@ -12,12 +12,16 @@ public static class ServiceConfig
         services.AddScoped<IAuthorizationService, AuthorizationService>();
         
         // CSV parsing
-        services.AddScoped<ICsvReaderRepository, CsvReaderRepository>();
         services.AddScoped<ICsvReaderService, CsvReaderService>();
+        services.AddScoped<IEndpointTokenService, EndpointTokenService>();
+        services.AddScoped<ICsvEndpointImportService, CsvEndpointImportService>();
 
         // CSV import -> DB
+        services.AddScoped<ICsvReaderRepository, CsvReaderRepository>();
         services.AddScoped<ICsvEndpointImportRepository, CsvEndpointImportRepository>();
-        services.AddScoped<ICsvEndpointImportService, CsvEndpointImportService>();
+        services.AddScoped<IEndpointTokenRepository, EndpointTokenRepository>();
+
+        // Generate Token for Endpoints
 
         return services;
     }
