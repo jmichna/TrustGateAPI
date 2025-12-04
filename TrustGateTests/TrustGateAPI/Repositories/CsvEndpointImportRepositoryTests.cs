@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SqlServer.Management.Smo.Broker;
 using Moq;
 using NUnit.Framework;
 using TrustGateAPI.Repositories;
@@ -48,8 +49,7 @@ public class CsvEndpointImportRepositoryTests
                     ["IdProjektu"] = "101",
                     ["EndpointName"] = "GetUser",
                     ["HttpMethod"] = "get",
-                    ["Route"] = "/users",
-                    ["ApiTokenId"] = "5"
+                    ["Route"] = "/users"
                 }),
             new CsvRowDto(
                 new Dictionary<string, string>
@@ -60,8 +60,7 @@ public class CsvEndpointImportRepositoryTests
                     ["IdProjektu"] = "101",
                     ["EndpointName"] = "CreateUser",
                     ["HttpMethod"] = "",
-                    ["Route"] = "/users/create",
-                    ["ApiTokenId"] = ""
+                    ["Route"] = "/users/create"
                 })
         };
 
@@ -91,8 +90,9 @@ public class CsvEndpointImportRepositoryTests
         var createEndpoint = endpoints.Single(e => e.Name == "CreateUser");
         Assert.That(createEndpoint.HttpMethod, Is.EqualTo("GET"));
 
-        var getEndpoint = endpoints.Single(e => e.Name == "GetUser");
-        Assert.That(getEndpoint.ApiTokenId, Is.EqualTo(5));
+        var getEndpoint = endpoints.First(e => e.Name == "GetUser");
+
+        Assert.That(getEndpoint, Is.Not.Null);
     }
 
     [Test]

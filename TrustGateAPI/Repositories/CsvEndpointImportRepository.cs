@@ -11,8 +11,8 @@ namespace TrustGateAPI.Repositories;
 public class CsvEndpointImportRepository(SqlDbContext db, ICsvReaderRepository csvReader)
     : ICsvEndpointImportRepository
 {
-    private readonly SqlDbContext _db;
-    private readonly ICsvReaderRepository _csvReader;
+    private readonly SqlDbContext _db = db;
+    private readonly ICsvReaderRepository _csvReader = csvReader;
 
     public async Task<int> ImportCompaniesWithEndpointsAsync(IFormFile file)
     {
