@@ -1,31 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TrustGateAPI.ModelsDto;
 using TrustGateAPI.Services.Interfaces;
 
 namespace TrustGateAPI.Controllers;
 
-public class AuthorizationController(IAuthorizationService authorizationService) : BaseController
+public class AuthorizationController(IAuthorizationService authorizationService)
+    : BaseController
 {
-
-    [HttpPost("Get")]
+    [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TokenResponse))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
-    public IActionResult GetToken([FromQuery] string login, string password)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         try
         {
-            var token = authorizationService.GenerateToken(login, password);
+            var token = await authorizationService.GenerateTokenAsync(
+                request.Login,
+                request.Password
+            );
+
             return Ok(new TokenResponse { Token = token });
         }
         catch (UnauthorizedAccessException)
         {
-            return Unauthorized(new ErrorResponse { Error = GetUnauthorizedMessage(nameof(GetToken)) });
+            return Unauthorized(new ErrorResponse
+            {
+                Error = GetUnauthorizedMessage(nameof(Login))
+            });
         }
     }
 
-    [HttpPut("Refresh")]
+    [HttpPut("refresh")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TokenResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-    public IActionResult RefresToken([FromQuery] string token)
+    public IActionResult RefreshToken([FromQuery] string token)
     {
         try
         {
@@ -34,7 +42,10 @@ public class AuthorizationController(IAuthorizationService authorizationService)
         }
         catch (Exception)
         {
-            return BadRequest(new ErrorResponse { Error = GetBadRequestMessage(nameof(RefresToken)) });
+            return BadRequest(new ErrorResponse
+            {
+                Error = GetBadRequestMessage(nameof(RefreshToken))
+            });
         }
     }
 }

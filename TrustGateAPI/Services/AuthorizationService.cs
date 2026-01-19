@@ -1,10 +1,15 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TrustGateAPI.Models;
 using TrustGateAPI.Models.Settings;
 using TrustGateAPI.Services.Interfaces;
+using TrustGateCore.Models;
+using TrustGateSqlLiteService.Db;
 
 namespace TrustGateAPI.Services;
 
@@ -12,68 +17,77 @@ public class AuthorizationService : IAuthorizationService
 {
     private readonly JsonSetting _settings;
     private readonly byte[] _secretKey;
-        
-    public AuthorizationService(IOptions<JsonSetting> jsonSettings)
+    private readonly SqlDbContext _context;
+
+    public AuthorizationService(
+        IOptions<JsonSetting> jsonSettings,
+        SqlDbContext context)
     {
         _settings = jsonSettings.Value;
         _secretKey = Encoding.UTF8.GetBytes(_settings.JwtKey);
+        _context = context;
     }
 
-    public string GenerateToken(string login, string password)
+    // 🔐 LOGIN
+    public async Task<string> GenerateTokenAsync(string login, string password)
     {
-        if(login != "admin" || password != "password")
-        {
-            throw new UnauthorizedAccessException("Invalid login or password");
-        }
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Login == login);
 
-        var email = $"{login.ToLower()}@example.com";
-        return CreateToken(login, email);
+        if (user == null)
+            throw new UnauthorizedAccessException("Invalid login or password");
+
+        if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            throw new UnauthorizedAccessException("Invalid login or password");
+
+        return CreateToken(user);
     }
 
     public string RefreshToken(string token)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        try
+        var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
         {
-            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateIssuerSigningKey = true,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero,
-                ValidIssuer = _settings.Issuer,
-                ValidAudience = _settings.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(_secretKey)
-            }, out _);
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
+            ValidIssuer = _settings.Issuer,
+            ValidAudience = _settings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(_secretKey)
+        }, out _);
 
-            var login = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var email = principal.FindFirst(ClaimTypes.Email)?.Value;
+        var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(email))
-                throw new SecurityTokenException("Invalid token claims.");
+        if (string.IsNullOrEmpty(userId))
+            throw new SecurityTokenException("Invalid token claims.");
 
-            return CreateToken(login, email);
-        }
-        catch (SecurityTokenExpiredException)
-        {
-            throw new SecurityTokenException("Token has expired. Please login again.");
-        }
-        catch (Exception)
-        {
-            throw new SecurityTokenException("Invalid or malformed token.");
-        }
+        return CreateTokenFromClaims(principal);
     }
 
-    private string CreateToken(string login, string email)
+    private string CreateToken(User user)
     {
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, login),
-            new Claim(ClaimTypes.Email, email)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Login),
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim("companyId", user.CompanyId.ToString())
         };
 
+        return BuildToken(claims);
+    }
+
+    private string CreateTokenFromClaims(ClaimsPrincipal principal)
+    {
+        var claims = principal.Claims.ToArray();
+        return BuildToken(claims);
+    }
+
+    private string BuildToken(IEnumerable<Claim> claims)
+    {
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
@@ -85,10 +99,7 @@ public class AuthorizationService : IAuthorizationService
             Audience = _settings.Audience
         };
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var jwt = tokenHandler.WriteToken(token);
-
-        return jwt;
+        var handler = new JwtSecurityTokenHandler();
+        return handler.WriteToken(handler.CreateToken(tokenDescriptor));
     }
 }

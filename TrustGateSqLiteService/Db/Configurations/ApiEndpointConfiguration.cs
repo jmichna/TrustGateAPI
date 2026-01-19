@@ -29,9 +29,36 @@ public class ApiEndpointConfiguration : IEntityTypeConfiguration<ApiEndpoint>
               .IsRequired()
               .HasMaxLength(300);
 
-        entity.HasOne(e => e.Company)
-              .WithMany(c => c.ApiEndpoints)
-              .HasForeignKey(e => e.CompanyId)
+        entity.HasOne(e => e.Project)
+              .WithMany(p => p.ApiEndpoints)
+              .HasForeignKey(e => e.ProjectId)
               .OnDelete(DeleteBehavior.Cascade);
+
+        entity.HasData(
+            new ApiEndpoint
+            {
+                Id = 1,
+                Name = "Get Users",
+                HttpMethod = "GET",
+                Route = "/api/users",
+                ProjectId = 1
+            },
+            new ApiEndpoint
+            {
+                Id = 2,
+                Name = "Create User",
+                HttpMethod = "POST",
+                Route = "/api/users",
+                ProjectId = 1
+            },
+            new ApiEndpoint
+            {
+                Id = 3,
+                Name = "Get Orders",
+                HttpMethod = "GET",
+                Route = "/api/orders",
+                ProjectId = 2
+            }
+        );
     }
 }

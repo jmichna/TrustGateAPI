@@ -5,9 +5,9 @@ using TrustGateCore.ModelsDto;
 
 namespace TrustGateAPI.Controllers;
 
-[Authorize]
 public class CsvController(ICsvReaderService csv, ICsvEndpointImportService importService) : BaseController
 {
+    [Authorize]
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Upload(IFormFile file)
@@ -23,6 +23,7 @@ public class CsvController(ICsvReaderService csv, ICsvEndpointImportService impo
         }
     }
 
+    [Authorize]
     [HttpPost("companies-with-endpoints")]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> ImportCompaniesWithEndpoints(IFormFile file)
