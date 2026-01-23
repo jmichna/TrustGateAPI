@@ -19,15 +19,19 @@ public class ApiTokenAccessController : BaseController
     public async Task<IActionResult> CheckAccess(
         [FromBody] CheckAccessRequest request)
     {
-        var hasAccess = await _service.HasAccessAsync(
-            request.Token,
-            request.HttpMethod,
-            request.Route,
-            request.CompanyId);
-
-        return Ok(new
+        try
         {
-            hasAccess
-        });
+            var hasAccess = await _service.HasAccessAsync(
+                request.Token,
+                request.HttpMethod,
+                request.Route,
+                request.CompanyId
+            );
+            return Ok(new { hasAccess });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }

@@ -10,8 +10,11 @@
 
   <ItemGroup>
     <Compile Remove="TrustGateAPI\Validation\**" />
+    <Compile Remove="TrustGateSqLiteService\**" />
     <EmbeddedResource Remove="TrustGateAPI\Validation\**" />
+    <EmbeddedResource Remove="TrustGateSqLiteService\**" />
     <None Remove="TrustGateAPI\Validation\**" />
+    <None Remove="TrustGateSqLiteService\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +40,6 @@
 
   <ItemGroup>
     <Folder Include="TrustGateCore\ModelsDto\" />
-    <Folder Include="TrustGateSqLiteService\Db\Configurations\" />
   </ItemGroup>
 
 </Project>

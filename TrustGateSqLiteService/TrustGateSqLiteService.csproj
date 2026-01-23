@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Exceptions\" />
-    <Folder Include="Repositories\Interfaces\" />
+    <Compile Remove="Exceptions\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Exceptions\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Exceptions\**" />
+    <None Remove="Repositories\**" />
   </ItemGroup>
 
   <ItemGroup>
