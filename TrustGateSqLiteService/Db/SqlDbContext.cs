@@ -15,10 +15,12 @@ public class SqlDbContext : DbContext
     //}
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<Authorization> Authorizations => Set<Authorization>();
     public DbSet<Company> Companies => Set<Company>();
-    public DbSet<Admin> Admins => Set<Admin>();
     public DbSet<ApiEndpoint> ApiEndpoints => Set<ApiEndpoint>();
+    public DbSet<ApiToken> ApiTokens => Set<ApiToken>();
+    public DbSet<ApiEndpointToken> ApiEndpointTokens => Set<ApiEndpointToken>();
+    public DbSet<ApiEndpointToken> LogEntries => Set<ApiEndpointToken>();
+    public DbSet<Project> Projects => Set<Project>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

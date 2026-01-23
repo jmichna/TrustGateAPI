@@ -9,12 +9,11 @@ namespace TrustGateCore.Models;
 public class Company
 {
     public int Id { get; set; }
-    public string CompanyName { get; set; } = string.Empty;
-    public string CompanyInitials { get; set; } = string.Empty;
-    public string ProjectName { get; set; } = string.Empty;
-    public int ProjectId { get; set; }
 
-    public ICollection<Authorization> Authorizations { get; set; } = new List<Authorization>();
-    public ICollection<ApiEndpoint> ApiEndpoints { get; set; } = new List<ApiEndpoint>();
+    public string Name { get; set; } = string.Empty;
+    public string Initials { get; set; } = string.Empty;
+
+    public ICollection<Project> Projects { get; set; } = new List<Project>();
+    public ICollection<User> Users { get; set; } = new List<User>();
 }
 
